@@ -1,0 +1,30 @@
+server.port=8080
+
+spring.datasource.url=jdbc:mysql://localhost:3306/db_name
+spring.datasource.username=your username
+spring.datasource.password=your passward
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+spring.jpa.database-platform=org.hibernate.dialect.MySQLDialect
+spring.jpa.open-in-view=false
+
+jwt.secret= yout secret key
+jwt.expiry.minutes=60
+
+spring.mail.host=smtp.gmail.com
+spring.mail.port=587
+spring.mail.username= sender mail
+spring.mail.password=passward
+spring.mail.properties.mail.smtp.auth=true
+spring.mail.properties.mail.smtp.starttls.enable=true
+
+otp.sms.enabled=false // on producton need to true ---*
+
+msg91.authkey= your key
+msg91.sender= sender Id
+msg91.templateId=Template Id
+
+logging.level.org.springframework.security=DEBUG
+logging.level.org.hibernate.SQL=DEBUG
