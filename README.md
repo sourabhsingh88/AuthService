@@ -1,5 +1,4 @@
-
-# setup
+_# setup
 
 1. Navigate to:
 
@@ -11,7 +10,7 @@
 - sms credentials 
 - Email credentials
 - JWT secret
-- otp.sms.enabled change to **true** whne sms provider availble
+- otp.sms.enabled change to **true** whne sms provider availble_
 
 
 

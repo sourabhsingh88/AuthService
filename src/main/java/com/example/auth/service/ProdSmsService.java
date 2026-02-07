@@ -40,7 +40,6 @@ public class ProdSmsService implements SmsService {
             }
 
         } catch (Exception ex) {
-            // do NOT leak OTP
             throw new RuntimeException("Unable to send OTP at this time");
         }
     }
