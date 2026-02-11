@@ -1,12 +1,16 @@
 package com.sourabh.AuthService.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
-@Data
 @Entity
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class User {
 
     @Id
@@ -31,12 +35,13 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    @Builder.Default
     @Column(nullable = false)
     private boolean emailVerified = false;
 
+    @Builder.Default
     @Column(nullable = false)
     private boolean phoneNumberVerified = false;
-
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;

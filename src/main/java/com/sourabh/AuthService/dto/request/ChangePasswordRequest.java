@@ -12,4 +12,6 @@ public class ChangePasswordRequest {
     @NotBlank
     @Size(min = 8)
     private String newPassword ;
+
+    private String confirmPassward;
 }

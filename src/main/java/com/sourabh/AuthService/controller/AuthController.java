@@ -3,7 +3,7 @@ package com.sourabh.AuthService.controller;
 import com.sourabh.AuthService.dto.request.*;
 import com.sourabh.AuthService.entity.User;
 import com.sourabh.AuthService.exceptions.UnauthorizedException;
-import com.sourabh.AuthService.service.AuthService;
+import com.sourabh.AuthService.service.contract.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,46 +18,45 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final AuthService authService;
+    private final RegistrationService registrationService;
+    private final VerificationService verificationService;
+    private final AuthenticationService authenticationService;
+    private final ProfileService profileService;
+    private final PasswordService passwordService;
 
     /* ===================== SIGNUP ===================== */
-    // 201 CREATED
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@Valid @RequestBody SignupRequest request) {
-        authService.signup(request);
+
+        registrationService.signup(request);
+
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(Map.of("message", "User registered successfully"));
     }
 
+    /* ===================== VERIFY ACCOUNT ===================== */
     @PostMapping("/verify")
     public ResponseEntity<?> verifyAccount(
             @Valid @RequestBody VerifyAccountRequest request
     ) {
-        authService.verifyAccount(request);
+        verificationService.verifyAccount(request);
+
         return ResponseEntity.ok(
                 Map.of("message", "Account verified successfully")
         );
     }
 
-
     /* ===================== LOGIN (EMAIL) ===================== */
-    // 200 OK
-//    @PostMapping("/login")
-//    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {
-//        return ResponseEntity.ok(
-//                Map.of("token", authService.login(request))
-//        );
-//    }
-
-
-
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {
-        return ResponseEntity.ok(authService.login(request));
+
+        return ResponseEntity.ok(
+                authenticationService.login(request)
+        );
     }
 
-
+    /* ===================== UPDATE PROFILE ===================== */
     @PatchMapping("/update")
     public ResponseEntity<?> updateProfile(
             @AuthenticationPrincipal User user,
@@ -67,60 +66,63 @@ public class AuthController {
             throw new UnauthorizedException("Unauthorized");
         }
 
-        authService.updateProfile(user, request);
+        profileService.updateProfile(user, request);
 
         return ResponseEntity.ok(
                 Map.of("message", "Profile updated successfully")
         );
     }
 
-
     /* ===================== LOGIN (PHONE OTP) ===================== */
-    // 202 ACCEPTED
     @PostMapping("/login/phone")
-    public ResponseEntity<?> sendPhoneOtp(@Valid @RequestBody LoginPhoneRequest request) {
-        authService.sendPhoneLoginOtp(request);
+    public ResponseEntity<?> sendPhoneOtp(
+            @Valid @RequestBody LoginPhoneRequest request
+    ) {
+        authenticationService.sendPhoneLoginOtp(request);
+
         return ResponseEntity
                 .status(HttpStatus.ACCEPTED)
                 .body(Map.of("message", "OTP sent"));
     }
 
     /* ===================== VERIFY PHONE OTP ===================== */
-    // 200 OK
     @PostMapping("/login/phone/verify")
-    public ResponseEntity<?> verifyPhoneOtp(@Valid @RequestBody VerifyPhoneOtpRequest request) {
-
+    public ResponseEntity<?> verifyPhoneOtp(
+            @Valid @RequestBody VerifyPhoneOtpRequest request
+    ) {
         return ResponseEntity.ok(
-                Map.of("token", authService.verifyPhoneLoginOtp(request))
+                Map.of(
+                        "token",
+                        authenticationService.verifyPhoneLoginOtp(request)
+                )
         );
     }
 
     /* ===================== FORGOT PASSWORD ===================== */
-    // 202 ACCEPTED
     @PostMapping("/password/forgot")
-    public ResponseEntity<?> forgotPassword(@Valid @RequestBody ResetPasswordOtpRequest request) {
-        authService.forgotPasswordOtp(request);
+    public ResponseEntity<?> forgotPassword(
+            @Valid @RequestBody ResetPasswordOtpRequest request
+    ) {
+        passwordService.forgotPasswordOtp(request);
+
         return ResponseEntity
                 .status(HttpStatus.ACCEPTED)
                 .body(Map.of("message", "OTP sent"));
     }
 
     /* ===================== RESET PASSWORD ===================== */
-    // 200 OK
-    // Errors handled by GlobalExceptionHandler:
-    // 400 → invalid OTP / password mismatch
-    // 404 → user not found
     @PostMapping("/password/reset")
-    public ResponseEntity<?> resetPassword(@Valid @RequestBody VerifyEmailOtpRequest request) {
-        authService.resetPassword(request);
+    public ResponseEntity<?> resetPassword(
+            @Valid @RequestBody VerifyEmailOtpRequest request
+    ) {
+        passwordService.resetPassword(request);
+
         return ResponseEntity.ok(
                 Map.of("message", "Password reset successful")
         );
     }
 
     /* ===================== CHANGE PASSWORD ===================== */
-    // 200 OK
-    // 401 UNAUTHORIZED if JWT missing/invalid
     @PostMapping("/password/change")
     public ResponseEntity<?> changePassword(
             @AuthenticationPrincipal User user,
@@ -130,7 +132,8 @@ public class AuthController {
             throw new UnauthorizedException("Unauthorized");
         }
 
-        authService.changePassword(user, request);
+        passwordService.changePassword(user, request);
+
         return ResponseEntity.ok(
                 Map.of("message", "Password changed successfully")
         );

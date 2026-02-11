@@ -2,11 +2,10 @@ package com.sourabh.AuthService.entity;
 
 import com.sourabh.AuthService.enums.OtpType;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
-@Data
 @Entity
 @Table(
         indexes = {
@@ -15,11 +14,16 @@ import java.time.LocalDateTime;
                 @Index(name = "idx_otp_type", columnList = "type")
         }
 )
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Otp {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     private String email;
     private String phone;
@@ -34,12 +38,15 @@ public class Otp {
     @Column(nullable = false)
     private LocalDateTime expiry;
 
+    @Builder.Default
     @Column(nullable = false)
     private boolean verified = false;
 
+    @Builder.Default
     @Column(nullable = false)
     private int attempts = 0;
 
+    @Builder.Default
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
@@ -47,7 +54,9 @@ public class Otp {
     @PreUpdate
     private void validateTarget() {
         if ((email == null && phone == null) || (email != null && phone != null)) {
-            throw new IllegalStateException("OTP must be linked to either email OR phone, not both.");
+            throw new IllegalStateException(
+                    "OTP must be linked to either email OR phone, not both."
+            );
         }
     }
 }

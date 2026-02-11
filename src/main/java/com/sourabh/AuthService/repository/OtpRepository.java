@@ -3,21 +3,41 @@ package com.sourabh.AuthService.repository;
 import com.sourabh.AuthService.entity.Otp;
 import com.sourabh.AuthService.enums.OtpType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
 
 public interface OtpRepository extends JpaRepository<Otp, Long> {
 
-    Optional<Otp> findTopByPhoneAndTypeAndVerifiedFalseAndExpiryAfterOrderByCreatedAtDesc(
-            String phone,
-            OtpType type,
-            LocalDateTime now
+    @Query("""
+        SELECT o
+        FROM Otp o
+        WHERE o.email = :email
+          AND o.type = :type
+          AND o.verified = false
+          AND o.expiry > :now
+        ORDER BY o.createdAt DESC
+    """)
+    Optional<Otp> findValidEmailOtp(
+            @Param("email") String email,
+            @Param("type") OtpType type,
+            @Param("now") LocalDateTime now
     );
 
-    Optional<Otp> findTopByEmailAndTypeAndVerifiedFalseAndExpiryAfterOrderByCreatedAtDesc(
-            String email,
-            OtpType type,
-            LocalDateTime now
+    @Query("""
+        SELECT o
+        FROM Otp o
+        WHERE o.phone = :phone
+          AND o.type = :type
+          AND o.verified = false
+          AND o.expiry > :now
+        ORDER BY o.createdAt DESC
+    """)
+    Optional<Otp> findValidPhoneOtp(
+            @Param("phone") String phone,
+            @Param("type") OtpType type,
+            @Param("now") LocalDateTime now
     );
 }
